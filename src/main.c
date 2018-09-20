@@ -21,6 +21,7 @@ void main(void)
   touch_init();
   terminal_init();
   ShowPLATO(splash,sizeof(splash));
+  terminal_initial_position();
   for (;;)
     {
         io_main();

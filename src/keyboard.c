@@ -29,7 +29,7 @@ void keyboard_out(unsigned char platoKey)
 
 void keyboard_main(void)
 {
-  int ch;
+  unsigned char ch;
   if (kbhit())
     {
       ch=getch();
