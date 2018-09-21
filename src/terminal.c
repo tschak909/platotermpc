@@ -42,6 +42,8 @@ extern unsigned char FONT_SIZE_X;
 extern unsigned char FONT_SIZE_Y;
 extern unsigned char CharWide;
 extern unsigned char CharHigh;
+extern unsigned char screen_mode;
+
 extern padPt TTYLoc;
 
 extern unsigned char already_started;
@@ -255,7 +257,7 @@ void terminal_ext_out(padByte value)
  * terminal_char_load - Store a character into the user definable
  * character set.
  */
-void terminal_char_load(padWord charnum, charData theChar)
+void terminal_char_load_320x200(padWord charnum, charData theChar)
 {
   // Clear char data. 
   memset(char_data,0,sizeof(char_data));
@@ -305,4 +307,38 @@ void terminal_char_load(padWord charnum, charData theChar)
 	    }
 	}
     }
+}
+
+void terminal_char_load_640x200(padWord charNum, charData theChar)
+{
+  memset(char_data,0,sizeof(char_data));
+  
+  // load and transpose character data into 8x16 array  
+  for (curr_word=0;curr_word<8;curr_word++)
+    {
+      for (u=16; u-->0; )
+	{
+	  if (theChar[curr_word] & 1<<u)
+	    {
+	      char_data[u^0x0F&0x0F]|=BTAB[curr_word];
+	    }
+	}
+    }
+
+  // OR pixel rows together, may not work for this one.
+  fontm23[(charNum*6)+0]=char_data[0]|char_data[1]|char_data[2]<<8;
+  fontm23[(charNum*6)+1]=char_data[3]|char_data[4]<<8;
+  fontm23[(charNum*6)+2]=char_data[5]|char_data[6]|char_data[7]<<8;
+  fontm23[(charNum*6)+3]=char_data[8]|char_data[9]<<8;
+  fontm23[(charNum*6)+4]=char_data[10]|char_data[11]|char_data[12]<<8;
+  fontm23[(charNum*6)+5]=char_data[13]|char_data[14]|char_data[15]<<8;
+  
+}
+
+void terminal_char_load(padWord charNum, charData theChar)
+{
+  if (screen_mode==0)
+    terminal_char_load_320x200(charNum,theChar);
+  else if (screen_mode==1)
+    terminal_char_load_640x200(charNum,theChar);
 }
