@@ -10,13 +10,45 @@
 unsigned char CharWide=8;
 unsigned char CharHigh=16;
 padPt TTYLoc;
+uint8_t FONT_SIZE_X;
+uint8_t FONT_SIZE_Y;
+uint16_t* scalex;
+uint16_t* scaley;
+uint8_t* font;
+uint16_t* fontptr;
+
 extern padBool FastText; /* protocol.c */
+
+unsigned char screen_mode=1;
+
 /**
  * screen_init() - Set up the screen
  */
 void screen_init(void)
 {
     _setvideomode( _MRES4COLOR);
+    switch(screen_mode)
+      {
+      case 0:
+	_setvideomode(_MRES4COLOR);
+	FONT_SIZE_X=5;
+	FONT_SIZE_Y=6;
+	font=&font_320x200;
+	scalex=&scalex_320x200;
+	scaley=&scaley_640x200;
+	fontptr=&fontptr_6;
+	break;
+      case 1:
+	_setvideomode(_HRESBW);
+	FONT_SIZE_X=8;
+	FONT_SIZE_Y=6;
+	font=&font_640x200;
+	scalex=&scalex_640x200;
+	scaley=&scaley_640x200;
+	fontptr=&fontptr_6;
+	break;
+      }
+    
 }
 
 /**

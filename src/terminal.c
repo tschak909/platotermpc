@@ -12,6 +12,7 @@
 
 #include <stdbool.h>
 #include <graph.h>
+#include <string.h>
 #include "terminal.h"
 #include "screen.h"
 
@@ -37,6 +38,8 @@ extern padBool FlowControl;
 /**
  * screen.c externals
  */
+extern unsigned char FONT_SIZE_X;
+extern unsigned char FONT_SIZE_Y;
 extern unsigned char CharWide;
 extern unsigned char CharHigh;
 extern padPt TTYLoc;
@@ -75,8 +78,7 @@ static unsigned char pix_cnt;     // total # of pixels
 static unsigned char curr_word;   // current word
 static unsigned char u,v;       // loop counters
 
-extern unsigned char fontm23[768];
-extern unsigned short fontptr[160];
+extern unsigned char fontm23[2048];
 
 /**
  * terminal_init()
@@ -258,7 +260,7 @@ void terminal_char_load(padWord charnum, charData theChar)
   // Clear char data. 
   memset(char_data,0,sizeof(char_data));
   memset(PIX_WEIGHTS,0,sizeof(PIX_WEIGHTS));
-  memset(&fontm23[fontptr[charnum]],0,6);
+  memset(&fontm23[charnum*FONT_SIZE_Y],0,6);
   
   // Transpose character data.  
   for (curr_word=0;curr_word<8;curr_word++)
@@ -285,7 +287,7 @@ void terminal_char_load(padWord charnum, charData theChar)
   	  for (v=5; v-->0; )
   	    {
   	      if (PIX_WEIGHTS[TAB_0_25[u]+v] >= PIX_THRESH[TAB_0_25[u]+v])
-  		fontm23[fontptr[charnum]+u]|=BTAB[v];
+  		fontm23[(charnum*FONT_SIZE_Y)+u]|=BTAB[v];
   	    }
   	}
     }
@@ -298,7 +300,7 @@ void terminal_char_load(padWord charnum, charData theChar)
 	    {
 	      if (char_data[u] & (1<<v))
 		{
-		  fontm23[fontptr[charnum]+TAB_0_5i[u]]|=BTAB_5[v];
+		  fontm23[(charnum*FONT_SIZE_Y)+TAB_0_5i[u]]|=BTAB_5[v];
 		}
 	    }
 	}
