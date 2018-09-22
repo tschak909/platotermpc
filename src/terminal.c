@@ -365,24 +365,38 @@ void terminal_char_load_350(padWord charNum, charData theChar)
   fontm23[(charNum*10)+9]=char_data[14]|char_data[15];
 }
 
-void terminal_char_load_640x480(padWord charnum, charData theChar)
+void terminal_char_load_640x480(padWord charNum, charData theChar)
 {
   // clear char data
-  memset(&fontm23[fontptr[charnum]],0,16);
+  memset(char_data,0,sizeof(char_data));
 
-  // Transpose character data
+  // load and transpose character data into 8x16 array  
   for (curr_word=0;curr_word<8;curr_word++)
     {
       for (u=16; u-->0; )
 	{
 	  if (theChar[curr_word] & 1<<u)
 	    {
-	      fontm23[fontptr[charnum]+u^0x0f&0x0f]|=BTAB[curr_word];
+	      char_data[u^0x0F&0x0F]|=BTAB[curr_word];
 	    }
 	}
     }
 
-  // and...that's it, really. :)  
+  fontm23[(charNum*16)+0]=char_data[0];
+  fontm23[(charNum*16)+1]=char_data[1];
+  fontm23[(charNum*16)+2]=char_data[2];
+  fontm23[(charNum*16)+3]=char_data[3];
+  fontm23[(charNum*16)+4]=char_data[4];
+  fontm23[(charNum*16)+5]=char_data[5];
+  fontm23[(charNum*16)+6]=char_data[6];
+  fontm23[(charNum*16)+7]=char_data[7];
+  fontm23[(charNum*16)+8]=char_data[8];
+  fontm23[(charNum*16)+9]=char_data[9];
+  fontm23[(charNum*16)+10]=char_data[10];
+  fontm23[(charNum*16)+11]=char_data[11];
+  fontm23[(charNum*16)+12]=char_data[12];
+  fontm23[(charNum*16)+13]=char_data[13];
+  fontm23[(charNum*16)+14]=char_data[14]|char_data[15]; 
 }
 
 
