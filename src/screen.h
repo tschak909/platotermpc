@@ -118,6 +118,11 @@ void screen_foreground(padRGB* theColor);
 void screen_background(padRGB* theColor);
 
 /**
+ * screen_paint - Called to paint at location.
+ */
+void screen_paint(padPt* Coord);
+
+/**
  * screen_done()
  * Close down TGI
  */

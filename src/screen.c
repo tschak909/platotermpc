@@ -687,6 +687,15 @@ void screen_background(padRGB* theColor)
 }
 
 /**
+ * screen_paint - Called to paint at location.
+ */
+void screen_paint(padPt* Coord)
+{
+  _setcolor(default_foreground);
+  _floodfill(scalex[Coord->x],scaley[Coord->y],-1);
+}
+
+/**
  * screen_done()
  * Close down TGI
  */
