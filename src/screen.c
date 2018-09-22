@@ -19,7 +19,7 @@ uint16_t* fontptr;
 
 extern padBool FastText; /* protocol.c */
 
-unsigned char screen_mode=3;
+unsigned char screen_mode=2;
 
 /**
  * screen_init() - Set up the screen
