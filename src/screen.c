@@ -20,6 +20,11 @@ uint8_t* font;
 uint16_t* fontptr;
 uint16_t width;
 uint16_t height;
+unsigned char screen_mode=8; // Try to detect by default
+bool is_mono=false;
+bool is_ega=false;
+unsigned char default_background=0;
+unsigned char default_foreground=1;
 
 struct videoconfig vc;
 
@@ -29,7 +34,6 @@ extern uint16_t touch_y_offset;
 extern uint16_t touch_x_scale;
 extern uint16_t touch_y_scale;
 extern bool touch_soft_cursor;
-unsigned char screen_mode=8; // Try to detect by default
 
 /**
  * screen_init() - Set up the screen
@@ -48,6 +52,8 @@ void screen_init(void)
 	scalex=&scalex_320;
 	scaley=&scaley_200;
 	fontptr=&fontptr_6;
+	is_mono=true;
+	default_foreground=3; // White.
 	break;
       case 1: // CGA 640x200x2
 	_setvideomode(_HRESBW);
@@ -59,6 +65,7 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_200;
 	fontptr=&fontptr_6;
+	is_mono=true;
 	break;
       case 2: // Hercules 720x350x2
 	_setvideomode(_HERCMONO);
@@ -71,6 +78,7 @@ void screen_init(void)
 	scaley=&scaley_350;
 	fontptr=&fontptr_10;
 	touch_soft_cursor=true;
+	is_mono=true;
 	break;
       case 3: // EGA 640x350x16
 	_setvideomode(_ERESCOLOR);
@@ -82,6 +90,8 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_350;
 	fontptr=&fontptr_10;
+	is_ega=true;
+	default_foreground=15; // white
 	/* _remappalette(1,0x00FFFFFF); // quickly get a white in palette. */
 	break;
       case 4: // VGA 640x480x2
@@ -188,6 +198,7 @@ void screen_init(void)
 	    scalex=&scalex_640;
 	    scaley=&scaley_350;
 	    fontptr=&fontptr_10;
+	    default_foreground=15; // white
 	    /* _remappalette(1,0x00FFFFFF); // quickly get a white in palette. */
 	    break;
 	  case _CGA:
@@ -201,6 +212,7 @@ void screen_init(void)
 	    scalex=&scalex_640;
 	    scaley=&scaley_200;
 	    fontptr=&fontptr_6;
+	    default_foreground=3; // white
 	    break;
 	  case _HERCULES:
 	    _setvideomode(_HERCMONO);
@@ -301,9 +313,9 @@ void screen_clear(void)
 void screen_block_draw(padPt* Coord1, padPt* Coord2)
 {
   if (CurMode==ModeErase || CurMode==ModeInverse)
-    _setcolor(0);
+    _setcolor(default_background);
   else
-    _setcolor(1);
+    _setcolor(default_foreground);
 
     _rectangle(_GFILLINTERIOR,scalex[Coord1->x],scaley[Coord1->y],scalex[Coord2->x],scaley[Coord2->y]);
 }
@@ -314,9 +326,9 @@ void screen_block_draw(padPt* Coord1, padPt* Coord2)
 void screen_dot_draw(padPt* Coord)
 {
   if (CurMode==ModeErase || CurMode==ModeInverse)
-    _setcolor(0);
+    _setcolor(default_background);
   else
-    _setcolor(1);
+    _setcolor(default_foreground);
 
   _setpixel(scalex[Coord->x],scaley[Coord->y]);
 
@@ -333,9 +345,9 @@ void screen_line_draw(padPt* Coord1, padPt* Coord2)
   unsigned short y2=scaley[Coord2->y];
 
   if (CurMode==ModeErase || CurMode==ModeInverse)
-    _setcolor(0);
+    _setcolor(default_background);
   else
-    _setcolor(1);
+    _setcolor(default_foreground);
 
     _moveto(x1,y1);
     _lineto(x2,y2);
@@ -386,17 +398,17 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
 
   if (CurMode==ModeRewrite)
     {
-      altColor=0;
+      altColor=default_background;
     }
   else if (CurMode==ModeInverse)
     {
-      altColor=1;
+      altColor=default_foreground;
     }
 
   if (CurMode==ModeErase || CurMode==ModeInverse)
-    mainColor=0;
+    mainColor=default_background;
   else
-    mainColor=1;
+    mainColor=default_foreground;
 
   _setcolor(mainColor);
 
