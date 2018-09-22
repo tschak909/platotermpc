@@ -3,6 +3,7 @@
  */
 
 #include <stdbool.h>
+#include <string.h>
 #include "protocol.h"
 #include "conio.h"
 #include "screen.h"
@@ -13,9 +14,35 @@
 #include "keyboard.h"
 
 unsigned char already_started=false;
+extern unsigned char screen_mode;
 
-void main(void)
+void process_args(int argc, char* argv[])
 {
+  int i;
+  for (i=1;i<=argc;++i)
+    {
+      if (!strcasecmp(argv[i],"/CGALO"))
+	screen_mode=0;
+      else if (!strcasecmp(argv[i],"/CGA"))
+	screen_mode=1;
+      else if (!strcasecmp(argv[i],"/HERCULES"))
+	screen_mode=2;
+      else if (!strcasecmp(argv[i],"/EGA"))
+	screen_mode=3;
+      else if (!strcasecmp(argv[i],"/VGAMONO"))
+	screen_mode=4;
+      else if (!strcasecmp(argv[i],"/VGA"))
+	screen_mode=5;
+      else if (!strcasecmp(argv[i],"/MCGA"))
+	screen_mode=6;
+      else if (!strcasecmp(argv[i],"/SVGA"))
+	screen_mode=7;
+    }
+}
+
+void main(int argc, char* argv[])
+{
+  process_args(argc,argv);
   screen_init();
   io_init();
   touch_init();

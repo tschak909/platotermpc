@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <graph.h>
 #include <conio.h>
+#include <stdio.h>
 #include "protocol.h"
 #include "math.h"
 #include "scale.h"
@@ -16,17 +17,17 @@ uint16_t* scalex;
 uint16_t* scaley;
 uint8_t* font;
 uint16_t* fontptr;
+struct videoconfig vc;
 
 extern padBool FastText; /* protocol.c */
 
-unsigned char screen_mode=2;
+unsigned char screen_mode=8; // Try to detect by default
 
 /**
  * screen_init() - Set up the screen
  */
 void screen_init(void)
 {
-    _setvideomode( _MRES4COLOR);
     switch(screen_mode)
       {
       case 0: // CGA 320x200x4
@@ -64,6 +65,7 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_350;
 	fontptr=&fontptr_10;
+	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
 	break;
       case 4: // VGA 640x480x2
 	_setvideomode(_VRES2COLOR);
@@ -73,6 +75,7 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_480;
 	fontptr=&fontptr_16;
+	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
 	break;
       case 5: // VGA 640x480x16
 	_setvideomode(_VRES16COLOR);
@@ -104,6 +107,75 @@ void screen_init(void)
 	fontptr=&fontptr_16;
 	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
 	break;
+      case 8: // Detect
+	_getvideoconfig(&vc);
+	switch(vc.adapter)
+	  {
+	  case _SVGA:
+	    screen_mode=7;
+	    FONT_SIZE_X=8;
+	    FONT_SIZE_Y=15;
+	    font=&font_640x480;
+	    scalex=&scalex_640;
+	    scaley=&scaley_480;
+	    fontptr=&fontptr_16;
+	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    break;
+	  case _VGA:
+	    screen_mode=5;
+	    FONT_SIZE_X=8;
+	    FONT_SIZE_Y=15;
+	    font=&font_640x480;
+	    scalex=&scalex_640;
+	    scaley=&scaley_480;
+	    fontptr=&fontptr_16;
+	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    break;
+	  case _MCGA:
+	    _setvideomode(_MRES256COLOR);
+	    screen_mode=6;
+	    FONT_SIZE_X=5;
+	    FONT_SIZE_Y=6;
+	    font=&font_320x200;
+	    scalex=&scalex_320;
+	    scaley=&scaley_200;
+	    fontptr=&fontptr_6;
+	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    break;
+	  case _EGA:
+	    _setvideomode(_ERESCOLOR);
+	    screen_mode=3;
+	    FONT_SIZE_X=8;
+	    FONT_SIZE_Y=10;
+	    font=&font_640x350;
+	    scalex=&scalex_640;
+	    scaley=&scaley_350;
+	    fontptr=&fontptr_10;
+	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    break;
+	  case _CGA:
+	    _setvideomode(_HRESBW);
+	    FONT_SIZE_X=8;
+	    FONT_SIZE_Y=6;
+	    font=&font_640x200;
+	    scalex=&scalex_640;
+	    scaley=&scaley_200;
+	    fontptr=&fontptr_6;
+	    break;
+	  case _HERCULES:
+	    _setvideomode(_HERCMONO);
+	    FONT_SIZE_X=8;
+	    FONT_SIZE_Y=10;
+	    font=&font_640x350;
+	    scalex=&scalex_720;
+	    scaley=&scaley_350;
+	    fontptr=&fontptr_10;
+	    break;
+	  default: // No supported video card.
+	    puts("PLATOTerm requires a graphics card.");
+	    exit(1);
+	    break;
+	  }
       }
 }
 
