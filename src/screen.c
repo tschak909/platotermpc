@@ -65,7 +65,7 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_350;
 	fontptr=&fontptr_10;
-	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	/* _remappalette(1,0x00FFFFFF); // quickly get a white in palette. */
 	break;
       case 4: // VGA 640x480x2
 	_setvideomode(_VRES2COLOR);
@@ -112,6 +112,7 @@ void screen_init(void)
 	switch(vc.adapter)
 	  {
 	  case _SVGA:
+	    _setvideomode(_VRES256COLOR);
 	    screen_mode=7;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=15;
@@ -122,6 +123,7 @@ void screen_init(void)
 	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
 	    break;
 	  case _VGA:
+	    _setvideomode(_VRES16COLOR);
 	    screen_mode=5;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=15;
@@ -151,7 +153,7 @@ void screen_init(void)
 	    scalex=&scalex_640;
 	    scaley=&scaley_350;
 	    fontptr=&fontptr_10;
-	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    /* _remappalette(1,0x00FFFFFF); // quickly get a white in palette. */
 	    break;
 	  case _CGA:
 	    _setvideomode(_HRESBW);
