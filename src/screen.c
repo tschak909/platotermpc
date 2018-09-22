@@ -199,6 +199,7 @@ void screen_init(void)
 	    scaley=&scaley_350;
 	    fontptr=&fontptr_10;
 	    default_foreground=15; // white
+	    is_ega=true;
 	    /* _remappalette(1,0x00FFFFFF); // quickly get a white in palette. */
 	    break;
 	  case _CGA:
@@ -317,7 +318,7 @@ void screen_block_draw(padPt* Coord1, padPt* Coord2)
   else
     _setcolor(default_foreground);
 
-    _rectangle(_GFILLINTERIOR,scalex[Coord1->x],scaley[Coord1->y],scalex[Coord2->x],scaley[Coord2->y]);
+  _rectangle(_GFILLINTERIOR,scalex[Coord1->x],scaley[Coord1->y],scalex[Coord2->x],scaley[Coord2->y]);
 }
 
 /**
@@ -579,6 +580,110 @@ void screen_tty_char(padByte theChar)
     TTYLoc.y=495;
   }
 
+}
+
+/**
+ * get screen color index matching RGB color for mono
+ */
+short screen_color_mono(padRGB* theColor)
+{
+  if ((theColor->red==0) &&
+      (theColor->green==0) &&
+      (theColor->blue==0))
+    {
+      return 0;
+    }
+  else
+    return 1;
+}
+
+/**
+ * get screen color index matching RGB color for EGA
+ */
+short screen_color_ega(padRGB* theColor)
+{
+  if (theColor->red==0 && theColor->green==0 && theColor->blue==0)
+    {
+      return 0;
+    }
+  else if (theColor->red==0 && theColor->green==0 && theColor->blue==255)
+    {
+      return 9;
+    }
+  else if (theColor->red==0 && theColor->green==255 && theColor->blue==0)
+    {
+      return 10;
+    }
+  else if (theColor->red==255 && theColor->green==0 && theColor->blue==0)
+    {
+      return 12;
+    }
+  else if (theColor->red==0 && theColor->green==255 && theColor->blue==255)
+    {
+      return 11;
+    }
+  else if (theColor->red==255 && theColor->green==0 && theColor->blue==255)
+    {
+      return 13;
+    }
+  else if (theColor->red==255 && theColor->green==255 && theColor->blue==0)
+    {
+      return 14;
+    }
+  else
+    {
+      return 15;
+    }
+}
+
+/**
+ * get screen color index matching RGB color for all other palette based modes
+ */
+short screen_color(padRGB* theColor)
+{
+  // FIXME Temporary!
+  return screen_color_mono(theColor);
+}
+
+/**
+ * screen_foreground - Called to set foreground color.
+ */
+void screen_foreground(padRGB* theColor)
+{
+  if (is_mono==1)
+    {
+      default_foreground=screen_color_mono(theColor);
+      return;
+    }
+  else if (is_ega==1)
+    {
+      default_foreground=screen_color_ega(theColor);
+      return;
+    }
+
+  // otherwise, handle via palette based color setting.
+  default_foreground=screen_color(theColor);
+
+}
+
+/**
+ * screen_background - Called to set foreground color.
+ */
+void screen_background(padRGB* theColor)
+{
+  if (is_mono==1)
+    {
+      default_background=screen_color_mono(theColor);
+      return;
+    }
+  else if (is_ega==1)
+    {
+      // default_background=screen_color_ega(theColor);
+      return;
+    }
+
+  // otherwise, handle via palette based color setting.
+  default_background=screen_color(theColor);
 }
 
 /**

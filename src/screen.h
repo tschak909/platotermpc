@@ -93,6 +93,31 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count);
 void screen_tty_char(padByte theChar);
 
 /**
+ * get screen color index matching RGB color for mono
+ */
+short screen_color_mono(padRGB* theColor);
+
+/**
+ * get screen color index matching RGB color for EGA
+ */
+short screen_color_ega(padRGB* theColor);
+
+/**
+ * get screen color index matching RGB color for all other palette based modes
+ */
+short screen_color(padRGB* theColor);
+
+/**
+ * screen_foreground - Called to set foreground color.
+ */
+void screen_foreground(padRGB* theColor);
+
+/**
+ * screen_background - Called to set foreground color.
+ */
+void screen_background(padRGB* theColor);
+
+/**
  * screen_done()
  * Close down TGI
  */
