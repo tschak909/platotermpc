@@ -19,7 +19,7 @@ uint16_t* fontptr;
 
 extern padBool FastText; /* protocol.c */
 
-unsigned char screen_mode=1;
+unsigned char screen_mode=3;
 
 /**
  * screen_init() - Set up the screen
@@ -29,26 +29,82 @@ void screen_init(void)
     _setvideomode( _MRES4COLOR);
     switch(screen_mode)
       {
-      case 0:
+      case 0: // CGA 320x200x4
 	_setvideomode(_MRES4COLOR);
 	FONT_SIZE_X=5;
 	FONT_SIZE_Y=6;
 	font=&font_320x200;
-	scalex=&scalex_320x200;
-	scaley=&scaley_640x200;
+	scalex=&scalex_320;
+	scaley=&scaley_200;
 	fontptr=&fontptr_6;
 	break;
-      case 1:
+      case 1: // CGA 640x200x2
 	_setvideomode(_HRESBW);
 	FONT_SIZE_X=8;
 	FONT_SIZE_Y=6;
 	font=&font_640x200;
-	scalex=&scalex_640x200;
-	scaley=&scaley_640x200;
+	scalex=&scalex_640;
+	scaley=&scaley_200;
 	fontptr=&fontptr_6;
 	break;
+      case 2: // Hercules 720x350x2
+	_setvideomode(_HERCMONO);
+	FONT_SIZE_X=8;
+	FONT_SIZE_Y=10;
+	font=&font_640x350;
+	scalex=&scalex_720;
+	scaley=&scaley_350;
+	fontptr=&fontptr_10;
+	break;
+      case 3: // EGA 640x350x16
+	_setvideomode(_ERESCOLOR);
+	FONT_SIZE_X=8;
+	FONT_SIZE_Y=10;
+	font=&font_640x350;
+	scalex=&scalex_640;
+	scaley=&scaley_350;
+	fontptr=&fontptr_10;
+	break;
+      case 4: // VGA 640x480x2
+	_setvideomode(_VRES2COLOR);
+	FONT_SIZE_X=8;
+	FONT_SIZE_Y=15;
+	font=&font_640x480;
+	scalex=&scalex_640;
+	scaley=&scaley_480;
+	fontptr=&fontptr_16;
+	break;
+      case 5: // VGA 640x480x16
+	_setvideomode(_VRES16COLOR);
+	FONT_SIZE_X=8;
+	FONT_SIZE_Y=15;
+	font=&font_640x480;
+	scalex=&scalex_640;
+	scaley=&scaley_480;
+	fontptr=&fontptr_16;
+	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	break;
+      case 6: // MCGA 320x200x256
+	_setvideomode(_MRES256COLOR);
+	FONT_SIZE_X=5;
+	FONT_SIZE_Y=6;
+	font=&font_320x200;
+	scalex=&scalex_320;
+	scaley=&scaley_200;
+	fontptr=&fontptr_6;
+	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	break;
+      case 7: // SVGA 640x480x256
+	_setvideomode(_VRES256COLOR);
+	FONT_SIZE_X=8;
+	FONT_SIZE_Y=15;
+	font=&font_640x480;
+	scalex=&scalex_640;
+	scaley=&scaley_480;
+	fontptr=&fontptr_16;
+	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	break;
       }
-    
 }
 
 /**
