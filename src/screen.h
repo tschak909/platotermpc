@@ -123,6 +123,16 @@ void screen_background(padRGB* theColor);
 void screen_paint(padPt* Coord);
 
 /**
+ * screen_color_matching - Find color index matching value.
+ */
+short screen_color_matching(padRGB* theColor);
+
+/**
+ * screen_color_transform - Transform 24-bit to 18-bit palette value
+ */
+long screen_color_transform(padRGB* theColor);
+
+/**
  * screen_done()
  * Close down TGI
  */

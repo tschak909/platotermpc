@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include "protocol.h"
 #include "math.h"
 #include "scale.h"
@@ -25,7 +26,9 @@ bool is_mono=false;
 bool is_ega=false;
 unsigned char default_background=0;
 unsigned char default_foreground=1;
-
+long default_foreground_color=0x00ffffff;
+long default_background_color=0;
+long palette[256];
 struct videoconfig vc;
 
 extern padBool FastText; /* protocol.c */
@@ -40,6 +43,8 @@ extern bool touch_soft_cursor;
  */
 void screen_init(void)
 {
+  memset(&palette,-1,sizeof(palette));
+  
     switch(screen_mode)
       {
       case 0: // CGA 320x200x4
@@ -104,6 +109,7 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_480;
 	fontptr=&fontptr_16;
+	is_mono=true;
 	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
 	break;
       case 5: // VGA 640x480x16
@@ -306,6 +312,10 @@ void screen_beep(void)
 void screen_clear(void)
 {
     _clearscreen(_GCLEARSCREEN);
+    memset(&palette,0,sizeof(palette));
+    palette[0]=default_background_color;
+    palette[1]=default_foreground_color;
+    _remapallpalette(palette);
 }
 
 /**
@@ -641,8 +651,10 @@ short screen_color_ega(padRGB* theColor)
  */
 short screen_color(padRGB* theColor)
 {
-  // FIXME Temporary!
-  return screen_color_mono(theColor);
+  short index=screen_color_matching(theColor);
+  palette[index]=screen_color_transform(theColor);
+  _remapallpalette(palette);
+  return index;
 }
 
 /**
@@ -663,6 +675,7 @@ void screen_foreground(padRGB* theColor)
 
   // otherwise, handle via palette based color setting.
   default_foreground=screen_color(theColor);
+  default_foreground_color=screen_color_transform(theColor);
 
 }
 
@@ -684,6 +697,7 @@ void screen_background(padRGB* theColor)
 
   // otherwise, handle via palette based color setting.
   default_background=screen_color(theColor);
+  default_background_color=screen_color_transform(theColor);
 }
 
 /**
@@ -693,6 +707,35 @@ void screen_paint(padPt* Coord)
 {
   _setcolor(default_foreground);
   _floodfill(scalex[Coord->x],scaley[Coord->y],-1);
+}
+
+/**
+ * screen_color_transform - Transform 24-bit to 18-bit palette value
+ */
+long screen_color_transform(padRGB* theColor)
+{
+  unsigned long newRed=theColor->red*0.25;
+  unsigned long newGreen=theColor->green*0.25;
+  unsigned long newBlue=theColor->blue*0.25;
+  unsigned long transformedColor=(newRed)|(newGreen<<8)|(newBlue<<16);
+  return transformedColor;
+}
+
+/**
+ * screen_color_matching - Find color index matching value.
+ */
+short screen_color_matching(padRGB* theColor)
+{
+  int i=0;
+  long transformedColor=screen_color_transform(theColor);
+  for (i=0;i<256;++i)
+    {
+      if (palette[i]==transformedColor)
+	return i;
+      else if (palette[i]==0)
+	return i;
+    }
+  return -1;
 }
 
 /**
