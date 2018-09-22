@@ -155,6 +155,7 @@ void screen_init(void)
 	    break;
 	  case _CGA:
 	    _setvideomode(_HRESBW);
+	    screen_mode=1;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=6;
 	    font=&font_640x200;
@@ -164,6 +165,7 @@ void screen_init(void)
 	    break;
 	  case _HERCULES:
 	    _setvideomode(_HERCMONO);
+	    screen_mode=2;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=10;
 	    font=&font_640x350;
