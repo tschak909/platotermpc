@@ -652,7 +652,7 @@ void screen_foreground(padRGB* theColor)
 {
   if (is_mono==1)
     {
-      default_foreground=screen_color_mono(theColor);
+      // default_foreground=screen_color_mono(theColor);
       return;
     }
   else if (is_ega==1)
@@ -673,7 +673,7 @@ void screen_background(padRGB* theColor)
 {
   if (is_mono==1)
     {
-      default_background=screen_color_mono(theColor);
+      //default_background=screen_color_mono(theColor);
       return;
     }
   else if (is_ega==1)
