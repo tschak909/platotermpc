@@ -10,12 +10,23 @@
 #ifndef TOUCH_H
 #define TOUCH_H
 
+#include <stdint.h>
 #include "protocol.h"
 
 /**
  * touch_init() - Set up touch screen
  */
 void touch_init(void);
+
+/**
+ * touch_update_soft_cursor() - Update soft mouse cursor
+ */
+void touch_update_soft_cursor(uint16_t x, uint16_t y);
+
+/**
+ * touch_process() - Process touch event
+ */
+void touch_process(uint16_t x, uint16_t y);
 
 /**
  * touch_main() - Main loop for touch screen

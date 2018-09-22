@@ -2,6 +2,7 @@
 #include <graph.h>
 #include <conio.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "protocol.h"
 #include "math.h"
 #include "scale.h"
@@ -17,10 +18,17 @@ uint16_t* scalex;
 uint16_t* scaley;
 uint8_t* font;
 uint16_t* fontptr;
+uint16_t width;
+uint16_t height;
+
 struct videoconfig vc;
 
 extern padBool FastText; /* protocol.c */
-
+extern uint16_t touch_x_offset; /* touch.c */
+extern uint16_t touch_y_offset;
+extern uint16_t touch_x_scale;
+extern uint16_t touch_y_scale;
+extern bool touch_soft_cursor;
 unsigned char screen_mode=8; // Try to detect by default
 
 /**
@@ -32,6 +40,8 @@ void screen_init(void)
       {
       case 0: // CGA 320x200x4
 	_setvideomode(_MRES4COLOR);
+	width=320;
+	height=200;
 	FONT_SIZE_X=5;
 	FONT_SIZE_Y=6;
 	font=&font_320x200;
@@ -41,6 +51,8 @@ void screen_init(void)
 	break;
       case 1: // CGA 640x200x2
 	_setvideomode(_HRESBW);
+	width=640;
+	height=200;
 	FONT_SIZE_X=8;
 	FONT_SIZE_Y=6;
 	font=&font_640x200;
@@ -50,15 +62,20 @@ void screen_init(void)
 	break;
       case 2: // Hercules 720x350x2
 	_setvideomode(_HERCMONO);
+	width=720;
+	height=350;
 	FONT_SIZE_X=8;
 	FONT_SIZE_Y=10;
 	font=&font_640x350;
 	scalex=&scalex_720;
 	scaley=&scaley_350;
 	fontptr=&fontptr_10;
+	touch_soft_cursor=true;
 	break;
       case 3: // EGA 640x350x16
 	_setvideomode(_ERESCOLOR);
+	width=640;
+	height=350;
 	FONT_SIZE_X=8;
 	FONT_SIZE_Y=10;
 	font=&font_640x350;
@@ -69,6 +86,8 @@ void screen_init(void)
 	break;
       case 4: // VGA 640x480x2
 	_setvideomode(_VRES2COLOR);
+	width=640;
+	height=480;
 	FONT_SIZE_X=8;
 	FONT_SIZE_Y=15;
 	font=&font_640x480;
@@ -79,6 +98,8 @@ void screen_init(void)
 	break;
       case 5: // VGA 640x480x16
 	_setvideomode(_VRES16COLOR);
+	width=640;
+	height=480;
 	FONT_SIZE_X=8;
 	FONT_SIZE_Y=15;
 	font=&font_640x480;
@@ -89,6 +110,8 @@ void screen_init(void)
 	break;
       case 6: // MCGA 320x200x256
 	_setvideomode(_MRES256COLOR);
+	width=320;
+	height=200;
 	FONT_SIZE_X=5;
 	FONT_SIZE_Y=6;
 	font=&font_320x200;
@@ -99,6 +122,8 @@ void screen_init(void)
 	break;
       case 7: // SVGA 640x480x256
 	_setvideomode(_VRES256COLOR);
+	width=640;
+	height=480;
 	FONT_SIZE_X=8;
 	FONT_SIZE_Y=15;
 	font=&font_640x480;
@@ -106,6 +131,7 @@ void screen_init(void)
 	scaley=&scaley_480;
 	fontptr=&fontptr_16;
 	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	touch_soft_cursor=true;
 	break;
       case 8: // Detect
 	_getvideoconfig(&vc);
@@ -113,6 +139,8 @@ void screen_init(void)
 	  {
 	  case _SVGA:
 	    _setvideomode(_VRES256COLOR);
+	    width=640;
+	    height=480;
 	    screen_mode=7;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=15;
@@ -121,9 +149,12 @@ void screen_init(void)
 	    scaley=&scaley_480;
 	    fontptr=&fontptr_16;
 	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    touch_soft_cursor=true;
 	    break;
 	  case _VGA:
 	    _setvideomode(_VRES16COLOR);
+	    width=640;
+	    height=480;
 	    screen_mode=5;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=15;
@@ -135,6 +166,8 @@ void screen_init(void)
 	    break;
 	  case _MCGA:
 	    _setvideomode(_MRES256COLOR);
+	    width=320;
+	    height=200;
 	    screen_mode=6;
 	    FONT_SIZE_X=5;
 	    FONT_SIZE_Y=6;
@@ -146,6 +179,8 @@ void screen_init(void)
 	    break;
 	  case _EGA:
 	    _setvideomode(_ERESCOLOR);
+	    width=640;
+	    height=350;
 	    screen_mode=3;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=10;
@@ -157,6 +192,8 @@ void screen_init(void)
 	    break;
 	  case _CGA:
 	    _setvideomode(_HRESBW);
+	    width=640;
+	    height=200;
 	    screen_mode=1;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=6;
@@ -167,6 +204,8 @@ void screen_init(void)
 	    break;
 	  case _HERCULES:
 	    _setvideomode(_HERCMONO);
+	    width=720;
+	    height=350;
 	    screen_mode=2;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=10;
@@ -174,6 +213,7 @@ void screen_init(void)
 	    scalex=&scalex_720;
 	    scaley=&scaley_350;
 	    fontptr=&fontptr_10;
+	    touch_soft_cursor=true;
 	    break;
 	  default: // No supported video card.
 	    puts("PLATOTerm requires a graphics card.");
@@ -181,6 +221,8 @@ void screen_init(void)
 	    break;
 	  }
       }
+
+    // Set touch offsets based on first scale table entries.
 }
 
 /**
