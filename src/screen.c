@@ -204,6 +204,7 @@ void screen_init(void)
 	    break;
 	  case _CGA:
 	    _setvideomode(_HRESBW);
+	    is_mono=true;
 	    width=640;
 	    height=200;
 	    screen_mode=1;
@@ -217,6 +218,7 @@ void screen_init(void)
 	    break;
 	  case _HERCULES:
 	    _setvideomode(_HERCMONO);
+	    is_mono=true;
 	    width=720;
 	    height=350;
 	    screen_mode=2;
@@ -610,10 +612,29 @@ short screen_color(padRGB* theColor)
 }
 
 /**
+ * get screen color for mono displays
+ */
+short screen_color_mono(padRGB* theColor)
+{
+  if ((theColor->red == 0x00) &&
+      (theColor->green == 0x00) &&
+      (theColor->blue == 0x00))
+    {
+      return default_background_color;
+    }
+  return default_foreground_color;
+}
+
+/**
  * screen_foreground - Called to set foreground color.
  */
 void screen_foreground(padRGB* theColor)
 {
+  if (is_mono==1)
+    {
+      screen_color_mono(theColor);
+      return;
+    }
   // otherwise, handle via palette based color setting.
   default_foreground=screen_color(theColor);
   if (default_foreground==-1)
@@ -627,6 +648,11 @@ void screen_foreground(padRGB* theColor)
  */
 void screen_background(padRGB* theColor)
 {
+  if (is_mono==1)
+    {
+      screen_color_mono(theColor);
+      return;
+    }
   // otherwise, handle via palette based color setting.
   default_background=screen_color(theColor);
   if (default_foreground==-1)

@@ -98,6 +98,11 @@ void screen_tty_char(padByte theChar);
 short screen_color(padRGB* theColor);
 
 /**
+ * get screen color for mono displays
+ */
+short screen_color_mono(padRGB* theColor);
+
+/**
  * screen_foreground - Called to set foreground color.
  */
 void screen_foreground(padRGB* theColor);
