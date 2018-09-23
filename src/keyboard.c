@@ -59,8 +59,7 @@ void keyboard_main(void)
       if (ch==0x00) // Extended key.
 	{
 	  ch=getch();
-	  printf("0x%02x\n",ch);
-	  if (ch==0x2D)
+	  if (ch==0x2d) // alt-x
 	    {
 	      prefs_display("Exit PLATOTERM (Y/N)? ");
 	      ch=prefs_get_key_matching("ynYN");
@@ -74,6 +73,18 @@ void keyboard_main(void)
 		case 'n':
 		  prefs_done();
 		}
+	    }
+	  else if (ch==0x23) // alt-h
+	    {
+	      prefs_display("Hang up (Y/N)? ");
+	      ch=prefs_get_key_matching("ynYN");
+	      switch(ch)
+		{
+		case 'y':
+		  io_hang_up();
+		  break;
+		}
+	      prefs_done();
 	    }
 	  if (ch==0x3B)
 	    prefs_run();

@@ -44,12 +44,8 @@ void io_init(void)
   regs.h.al = 0x02;
   regs.x.dx = PORT;
   int86(FOSSIL,&regs,&regs);
-  
-  // Raise DTR
-  regs.h.ah = 0x06;
-  regs.h.al = 0x01;
-  regs.x.dx = config.port;
-  int86(FOSSIL,&regs,&regs);
+
+  io_raise_dtr();
 }
 
 void io_send_byte(unsigned char b)
@@ -58,6 +54,31 @@ void io_send_byte(unsigned char b)
   regs.h.al = b;
   regs.h.ah = 0x01;
   int86(FOSSIL, &regs, &regs);
+}
+
+void io_lower_dtr(void)
+{
+  // Lower DTR
+  regs.h.ah = 0x06;
+  regs.h.al = 0x00;
+  regs.x.dx = config.port;
+  int86(FOSSIL,&regs,&regs);  
+}
+
+void io_raise_dtr(void)
+{
+  // Raise DTR
+  regs.h.ah = 0x06;
+  regs.h.al = 0x01;
+  regs.x.dx = config.port;
+  int86(FOSSIL,&regs,&regs);
+}
+
+void io_hang_up(void)
+{
+  io_lower_dtr();
+  delay(500);
+  io_raise_dtr();
 }
 
 void io_main(void)
@@ -82,12 +103,8 @@ void io_main(void)
 
 void io_done(void)
 {
-  // Lower DTR
-  regs.h.ah = 0x06;
-  regs.h.al = 0x00;
-  regs.x.dx = config.port;
-  int86(FOSSIL,&regs,&regs);
-
+  io_hang_up();
+  
   // Deinitialize driver.
   regs.h.ah = 0x05;
   regs.x.dx = config.port;

@@ -23,8 +23,8 @@ uint16_t width;
 uint16_t height;
 unsigned char screen_mode=8; // Try to detect by default
 bool is_mono=false;
-unsigned char default_background=0;
-unsigned char default_foreground=1;
+short default_background=0;
+short default_foreground=1;
 long default_foreground_color=0x003f3f3f;
 long default_background_color=0;
 long palette[256];
@@ -596,21 +596,6 @@ void screen_tty_char(padByte theChar)
 }
 
 /**
- * get screen color index matching RGB color for mono
- */
-short screen_color_mono(padRGB* theColor)
-{
-  if ((theColor->red==0) &&
-      (theColor->green==0) &&
-      (theColor->blue==0))
-    {
-      return 0;
-    }
-  else
-    return 1;
-}
-
-/**
  * get screen color index matching RGB color for all other palette based modes
  */
 short screen_color(padRGB* theColor)
@@ -629,14 +614,10 @@ short screen_color(padRGB* theColor)
  */
 void screen_foreground(padRGB* theColor)
 {
-  if (is_mono==1)
-    {
-      // default_foreground=screen_color_mono(theColor);
-      return;
-    }
-
   // otherwise, handle via palette based color setting.
   default_foreground=screen_color(theColor);
+  if (default_foreground==-1)
+    printf("fg color still -1!\n");
   default_foreground_color=screen_color_transform(theColor);
 
 }
@@ -646,14 +627,10 @@ void screen_foreground(padRGB* theColor)
  */
 void screen_background(padRGB* theColor)
 {
-  if (is_mono==1)
-    {
-      //default_background=screen_color_mono(theColor);
-      return;
-    }
-
   // otherwise, handle via palette based color setting.
   default_background=screen_color(theColor);
+  if (default_foreground==-1)
+    printf("bg color still -1!\n");
   default_background_color=screen_color_transform(theColor);
 }
 

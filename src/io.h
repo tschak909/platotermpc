@@ -34,6 +34,12 @@ void io_send_byte(unsigned char b);
  */
 void io_main(void);
 
+void io_lower_dtr(void);
+
+void io_raise_dtr(void);
+
+void io_hang_up(void);
+
 void io_done(void);
 
 #endif /* IO_H */

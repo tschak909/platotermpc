@@ -240,6 +240,13 @@ PLATO and equivent PC keys:
 |  ASSIGN       |  ESC                    |
 +---------------+-------------------------+
 
+System Keys
+-----------
+
+F1    - Setup
+ALT-X - Exit PLATOTerm
+ALT-H - Hang Up
+
 -------------------
 Further information
 -------------------
