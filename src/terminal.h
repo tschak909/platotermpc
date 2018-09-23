@@ -10,7 +10,21 @@
 #ifndef TERMINAL_H
 #define TERMINAL_H
 
+#include <stdint.h>
 #include "protocol.h"
+
+typedef struct _terminalState {
+
+  padBool TTY;
+  padPt TTYLoc;
+  uint8_t CharWide;
+  uint8_t CharHigh;
+  DispMode CurMode;
+  padBool ModeBold;
+  padBool Rotate;
+  padBool Reverse;
+
+} TerminalState;
 
 /**
  * terminal_init()
@@ -128,5 +142,15 @@ padByte terminal_ext_in(void);
  * Not implemented.
  */
 void terminal_ext_out(padByte value);
+
+/**
+ * Save terminal state, e.g. for prefs
+ */
+void terminal_save(void);
+
+/**
+ * Restore terminal state, e.g. for prefs
+ */
+void terminal_load(void);
 
 #endif

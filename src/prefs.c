@@ -26,15 +26,6 @@
 extern ConfigInfo config;
 
 uint8_t prefs_running;
-static padBool TTYSave;
-static padPt TTYLocSave;
-static uint8_t CharWideSave;
-static uint8_t CharHighSave;
-static uint8_t CurMemSave;
-static DispMode CurModeSave;
-static padBool ModeBoldSave;
-static padBool RotateSave;
-static padBool ReverseSave;
 extern padBool TTY;
 extern padPt TTYLoc;
 extern uint8_t CharWide;
@@ -45,6 +36,7 @@ extern padBool Rotate;
 extern padBool Reverse;
 extern uint16_t* scalex;
 extern uint16_t* scaley;
+extern TerminalState terminal_state;
 
 uint8_t temp_val[8];
 uint8_t ch;
@@ -58,19 +50,6 @@ uint8_t io_prefs_updated;
 void prefs_run(void)
 {
   keyboard_clear();
-  TTYSave=TTY;
-  TTYLocSave.x = TTYLoc.x;
-  TTYLocSave.y = TTYLoc.y;
-  CharWideSave=CharWide;
-  CharHighSave=CharHigh;
-  CharWide=8;
-  CharHigh=16;
-  CurMem=M0;
-  CurModeSave=CurMode;
-  ModeBoldSave=ModeBold;
-  RotateSave=Rotate;
-  ReverseSave=Reverse;
-  TTY=true;
   prefs_running=true;
   touch_prefs_updated=false;
   io_prefs_updated=false;
@@ -91,9 +70,6 @@ void prefs_run(void)
       prefs_update();
     }
   
-  TTY=TTYSave;
-  TTYLoc.x=TTYLocSave.x;
-  TTYLoc.y=TTYLocSave.y;
   prefs_done();
 }
 
@@ -275,6 +251,12 @@ void prefs_baud(void)
  */
 void prefs_display(const char* text)
 {
+  terminal_save();
+  CharWide=8;
+  CharHigh=16;
+  CurMem=M0;
+  TTY=true;
+  
   TTYLoc.x=0;
   TTYLoc.y=1;
   
@@ -381,14 +363,6 @@ void prefs_show_greeting(void)
  */
 void prefs_done(void)
 {
-  TTY=TTYSave;
-  CharWide=CharWideSave;
-  CharHigh=CharHighSave;
-  CurMem=CurMemSave;
-  ModeBold=ModeBoldSave;
-  Rotate=RotateSave;
-  Reverse=ReverseSave;
   prefs_clear();
-  TTYLoc.x=TTYLocSave.x;
-  TTYLoc.y=TTYLocSave.y;
+  terminal_load();
 }

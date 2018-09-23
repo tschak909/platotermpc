@@ -72,7 +72,7 @@ void keyboard_main(void)
 		  exit(0);
 		  break;
 		case 'n':
-		  prefs_clear();
+		  prefs_done();
 		}
 	    }
 	  if (ch==0x3B)

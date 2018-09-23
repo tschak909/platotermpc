@@ -84,6 +84,8 @@ static unsigned char u,v;       // loop counters
 
 extern unsigned char fontm23[2048];
 
+TerminalState terminal_state;
+
 /**
  * terminal_init()
  * Initialize terminal state
@@ -410,4 +412,36 @@ void terminal_char_load(padWord charNum, charData theChar)
     terminal_char_load_350(charNum,theChar);
   else if ((screen_mode==4) || (screen_mode==5) || (screen_mode==7))
     terminal_char_load_640x480(charNum,theChar);
+}
+
+/**
+ * Save terminal state, e.g. for prefs
+ */
+void terminal_save(void)
+{
+  terminal_state.TTY       = TTY;
+  terminal_state.TTYLoc.x  = TTYLoc.x;
+  terminal_state.TTYLoc.y  = TTYLoc.y;
+  terminal_state.CharWide  = CharWide;
+  terminal_state.CharHigh  = CharHigh;
+  terminal_state.CurMode   = CurMode;
+  terminal_state.ModeBold  = ModeBold;
+  terminal_state.Rotate    = Rotate;
+  terminal_state.Reverse   = Reverse;
+}
+
+/**
+ * Restore terminal state, e.g. for prefs
+ */
+void terminal_load(void)
+{
+  TTY      = terminal_state.TTY;
+  TTYLoc.x = terminal_state.TTYLoc.x;
+  TTYLoc.y = terminal_state.TTYLoc.y;
+  CharWide = terminal_state.CharWide;
+  CharHigh = terminal_state.CharHigh;
+  CurMode  = terminal_state.CurMode;
+  ModeBold = terminal_state.ModeBold;
+  Rotate   = terminal_state.Rotate;
+  Reverse  = terminal_state.Reverse;
 }
