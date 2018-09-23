@@ -127,12 +127,10 @@ short screen_color_matching(padRGB* theColor);
  */
 long screen_color_transform(padRGB* theColor);
 
-#ifdef __PALETTE_DEBUG__
 /**
  * screen_palette_dump
  */
 void screen_palette_dump(void);
-#endif
 
 /**
  * screen_done()

@@ -317,11 +317,9 @@ void screen_clear(void)
     // Avoid duplicating palette entry if foreground/background colors are the same.
     if (default_background_color!=default_foreground_color)
       palette[1]=default_foreground_color;
-
+   
     _remapallpalette(palette);
-#ifdef __PALETTE_DEBUG__
     screen_palette_dump();
-#endif
 }
 
 /**
@@ -329,11 +327,36 @@ void screen_clear(void)
  */
 void screen_block_draw(padPt* Coord1, padPt* Coord2)
 {
-  if (CurMode==ModeErase || CurMode==ModeInverse)
-    _setcolor(default_background);
-  else
-    _setcolor(default_foreground);
 
+  // Special case for mono.
+  if (is_mono==1)
+    {
+      if (CurMode==ModeErase || CurMode==ModeInverse)
+	{
+	  _setcolor(default_background);
+	}
+      else
+	{
+	  _setcolor(default_foreground);
+	}
+      _rectangle(_GFILLINTERIOR,scalex[Coord1->x],scaley[Coord1->y],scalex[Coord2->x],scaley[Coord2->y]);
+      return;
+    }
+  
+  if (CurMode==ModeErase || CurMode==ModeInverse)
+    {
+      if (palette[default_background]==-1)
+	_setcolor(0);
+      else
+	_setcolor(default_background);
+    }
+  else
+    {
+      if (palette[default_foreground]==-1)
+	_setcolor(1);
+      else
+	_setcolor(default_foreground);
+    }
   _rectangle(_GFILLINTERIOR,scalex[Coord1->x],scaley[Coord1->y],scalex[Coord2->x],scaley[Coord2->y]);
 }
 
@@ -342,10 +365,32 @@ void screen_block_draw(padPt* Coord1, padPt* Coord2)
  */
 void screen_dot_draw(padPt* Coord)
 {
+
+  // Special case for mono.
+  if (is_mono==1)
+    {
+      if (CurMode==ModeErase || CurMode==ModeInverse)
+	  _setcolor(default_background);
+      else
+	  _setcolor(default_foreground);
+      _setpixel(scalex[Coord->x],scaley[Coord->y]);
+      return;
+    }
+  
   if (CurMode==ModeErase || CurMode==ModeInverse)
-    _setcolor(default_background);
+    {
+      if (palette[default_background]==-1)
+	_setcolor(0);
+      else
+	_setcolor(default_background);
+    }
   else
-    _setcolor(default_foreground);
+    {
+      if (palette[default_foreground]==-1)
+	_setcolor(1);
+      else
+	_setcolor(default_foreground);
+    }
 
   _setpixel(scalex[Coord->x],scaley[Coord->y]);
 
@@ -361,11 +406,33 @@ void screen_line_draw(padPt* Coord1, padPt* Coord2)
   unsigned short y1=scaley[Coord1->y];
   unsigned short y2=scaley[Coord2->y];
 
+  // Special case for mono.
+  if (is_mono==1)
+    {
+      if (CurMode==ModeErase || CurMode==ModeInverse)
+	_setcolor(default_background);
+      else
+	_setcolor(default_foreground);
+      _moveto(x1,y1);
+      _lineto(x2,y2);
+      return;
+    }
+  
   if (CurMode==ModeErase || CurMode==ModeInverse)
-    _setcolor(default_background);
+    {
+      if (palette[default_background]==-1)
+	_setcolor(0);
+      else
+	_setcolor(default_background);
+    }
   else
-    _setcolor(default_foreground);
-
+    {
+      if (palette[default_foreground]==-1)
+	_setcolor(1);
+      else
+	_setcolor(default_foreground);
+    }
+  
     _moveto(x1,y1);
     _lineto(x2,y2);
 }
@@ -392,6 +459,7 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
   unsigned char altColor=0;
   unsigned char *p;
   unsigned char* curfont;
+  char tmp[32];
 
   switch(CurMem)
     {
@@ -427,6 +495,15 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
   else
     mainColor=default_foreground;
 
+  if (is_mono==0)
+    {
+      if (palette[mainColor]==-1)
+	mainColor=0;
+      
+      if (palette[altColor]==-1)
+	altColor=0;
+    }
+  
   _setcolor(mainColor);
 
   x=scalex[(Coord->x&0x1FF)];
@@ -475,7 +552,7 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
 
   return;
 
- chardraw_with_fries:
+ chardraw_with_fries:  
   if (Rotate)
     {
       deltaX=-abs(deltaX);
@@ -632,15 +709,17 @@ short screen_color_mono(padRGB* theColor)
  */
 void screen_foreground(padRGB* theColor)
 {
+  short index;
   if (is_mono==1)
     {
       screen_color_mono(theColor);
       return;
     }
   // otherwise, handle via palette based color setting.
-  default_foreground=screen_color(theColor);
+  index=screen_color(theColor);
+  default_foreground=index;
   default_foreground_color=screen_color_transform(theColor);
-
+  screen_palette_dump();
 }
 
 /**
@@ -648,14 +727,17 @@ void screen_foreground(padRGB* theColor)
  */
 void screen_background(padRGB* theColor)
 {
+  short index;
   if (is_mono==1)
     {
       screen_color_mono(theColor);
       return;
     }
   // otherwise, handle via palette based color setting.
-  default_background=screen_color(theColor);
+  index=screen_color(theColor);
+  default_background=index;
   default_background_color=screen_color_transform(theColor);
+  screen_palette_dump();
 }
 
 /**
@@ -702,22 +784,31 @@ short screen_color_matching(padRGB* theColor)
   return -1;
 }
 
-#ifdef __PALETTE_DEBUG__
 /**
  * screen_palette_dump
  */
 void screen_palette_dump(void)
 {
-  unsigned char i;
-  short x=0;
-  for (i=0;i<16;++i)
-    {
-      _setcolor(i);
-      _rectangle(_GFILLINTERIOR,x,20,x+8,28);
-      x+=8;
-    }
+  /* unsigned char i; */
+  /* short x=0; */
+  /* char tmp[32]; */
+  /* for (i=0;i<16;++i) */
+  /*   { */
+  /*     _setcolor(i); */
+  /*     _rectangle(_GFILLINTERIOR,x,20,x+16,20+16); */
+  /*     x+=8; */
+  /*   } */
+
+  /* _settextposition(10,1); */
+  /* sprintf(tmp,"b: %02d f: %02d",default_background,default_foreground); */
+  /* _outtext(tmp); */
+  /* _settextposition(11,1); */
+  /* sprintf(tmp,"[1] = 0x%08x",palette[1]); */
+  /* _outtext(tmp); */
+  /* _settextposition(12,1); */
+  /* sprintf(tmp,"[2] = 0x%08x",palette[2]); */
+  /* _outtext(tmp); */
 }
-#endif
 
 /**
  * screen_done()
