@@ -307,9 +307,17 @@ void screen_clear(void)
 {
     _clearscreen(_GCLEARSCREEN);
     memset(&palette,-1,sizeof(palette));
+
     palette[0]=default_background_color;
-    palette[1]=default_foreground_color;
+
+    // Avoid duplicating palette entry if foreground/background colors are the same.
+    if (default_background_color!=default_foreground_color)
+      palette[1]=default_foreground_color;
+
     _remapallpalette(palette);
+#ifdef __PALETTE_DEBUG__
+    screen_palette_dump();
+#endif
 }
 
 /**
@@ -610,6 +618,9 @@ short screen_color(padRGB* theColor)
   short index=screen_color_matching(theColor);
   palette[index]=screen_color_transform(theColor);
   _remapallpalette(palette);
+#ifdef __PALETTE_DEBUG__
+  screen_palette_dump();
+#endif
   return index;
 }
 
@@ -689,6 +700,23 @@ short screen_color_matching(padRGB* theColor)
     }
   return -1;
 }
+
+#ifdef __PALETTE_DEBUG__
+/**
+ * screen_palette_dump
+ */
+void screen_palette_dump(void)
+{
+  unsigned char i;
+  short x=0;
+  for (i=0;i<16;++i)
+    {
+      _setcolor(i);
+      _rectangle(_GFILLINTERIOR,x,20,x+8,28);
+      x+=8;
+    }
+}
+#endif
 
 /**
  * screen_done()
