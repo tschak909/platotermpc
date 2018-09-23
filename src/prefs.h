@@ -57,6 +57,12 @@ void prefs_driver(void);
 void prefs_baud(void);
 
 /**
+ * prefs_port(void)
+ * Preferences to set COM port
+ */
+void prefs_port(void);
+
+/**
  * prefs_touch(void)
  * Preferences for selecting touch driver
  */
