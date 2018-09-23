@@ -61,6 +61,7 @@ void keyboard_main(void)
 	  ch=getch();
 	  if (ch==0x2d) // alt-x
 	    {
+	      prefs_clear();
 	      prefs_display("Exit PLATOTERM (Y/N)? ");
 	      ch=prefs_get_key_matching("ynYN");
 	      switch(ch)
@@ -76,6 +77,7 @@ void keyboard_main(void)
 	    }
 	  else if (ch==0x23) // alt-h
 	    {
+	      prefs_clear();
 	      prefs_display("Hang up (Y/N)? ");
 	      ch=prefs_get_key_matching("ynYN");
 	      switch(ch)
