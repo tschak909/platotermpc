@@ -150,10 +150,10 @@ void screen_init(void)
 	switch(vc.adapter)
 	  {
 	  case _SVGA:
-	    _setvideomode(_VRES256COLOR);
+	    _setvideomode(_VRES16COLOR);
 	    width=640;
 	    height=480;
-	    screen_mode=7;
+	    screen_mode=5;
 	    FONT_SIZE_X=8;
 	    FONT_SIZE_Y=15;
 	    font=&font_640x480;
@@ -161,7 +161,7 @@ void screen_init(void)
 	    scaley=&scaley_480;
 	    fontptr=&fontptr_16;
 	    _remappalette(1,0x003F3F3F); // quickly get a white in palette.
-	    touch_soft_cursor=true;
+	    // touch_soft_cursor=true;
 	    break;
 	  case _VGA:
 	    _setvideomode(_VRES16COLOR);

@@ -39,6 +39,12 @@ void io_init(void)
   regs.h.ah = 0x00;
   int86(FOSSIL,&regs,&regs);
 
+  // Set RTS/CTS Flow control
+  regs.h.ah = 0x0f;
+  regs.h.al = 0x02;
+  regs.x.dx = PORT;
+  int86(FOSSIL,&regs,&regs);
+  
   // Raise DTR
   regs.h.ah = 0x06;
   regs.h.al = 0x01;

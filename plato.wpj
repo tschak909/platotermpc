@@ -4,10 +4,10 @@ projectIdent
 VpeMain
 1
 WRect
--5740
--5262
-5760
-8938
+-32
+-56
+10304
+10069
 2
 MProject
 3
@@ -29,9 +29,9 @@ VComponent
 8
 WRect
 52
-92
+85
 5476
-2446
+2439
 0
 0
 9
@@ -39,5 +39,5 @@ WFileName
 9
 plato.tgt
 0
-5
+7
 7
