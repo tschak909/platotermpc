@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <i86.h>
 #include "protocol.h"
 #include "math.h"
 #include "scale.h"
@@ -298,6 +299,9 @@ void screen_wait(void)
  */
 void screen_beep(void)
 {
+  sound(440);
+  delay(100);
+  nosound();
 }
 
 /**
