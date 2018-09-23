@@ -1,15 +1,12 @@
 #include <stdio.h>
 #include <conio.h>
 #include <stdbool.h>
+#include <bios.h>
 #include "io.h"
 #include "protocol.h"
 #include "plato_key.h"
 #include "key.h"
 #include "keyboard.h"
-
-char is_escape;
-char shift_lock;
-
 
 void keyboard_out(unsigned char platoKey)
 {
@@ -30,41 +27,46 @@ void keyboard_out(unsigned char platoKey)
 void keyboard_main(void)
 {
   unsigned char ch;
+  unsigned short state;
+  bool shift_pressed;
+  bool ctrl_pressed;
+  
   if (kbhit())
     {
       ch=getch();
-      if (is_escape==true && ch==0x1B) // ESC
-  	{
-  	  /* screen_beep(); */
+      state = _bios_keybrd(_KEYBRD_SHIFTSTATUS);
 
-  	  if (shift_lock==true)
-  	    shift_lock=false;
-  	  else
-  	    shift_lock=true;
-	  
-  	  is_escape=false;
-  	}
-      else if (is_escape==false && ch==0x1B)
-  	is_escape=true;
-      /* else if (ch==0x1A) // CTRL-Z for prefs */
-      /* 	prefs_run(); */
-      else if (TTY)
-  	{
-  	  keyboard_out_tty(ch);
-  	}
-      else if (is_escape==true)
-  	{
-  	  keyboard_out(esc_key_to_pkey[ch]);
-  	  is_escape=false;
-  	}
-      else if (shift_lock==true)
-  	{
-  	  keyboard_out(shiftlock_key_to_pkey[ch]);
-  	}
+      if ((state&0x03)!=0) // Detect shift keys.
+	shift_pressed=true;
       else
-  	{
-  	  keyboard_out(key_to_pkey[ch]);
-  	}
+	shift_pressed=false;
+      
+      if ((state&0x04)!=0) // Detect ctrl key.
+	ctrl_pressed=true;
+      else
+	ctrl_pressed=false;
+
+      if (ch==0x00) // Extended key.
+	{
+	  ch=getch();
+	  if (shift_pressed==true)
+	    {
+	      keyboard_out(extended_shift_key_to_pkey[ch]);
+	    }
+	  else
+	    {
+	      keyboard_out(extended_key_to_pkey[ch]);
+	    }
+	}
+      else if ((shift_pressed==true) && (ctrl_pressed==true))
+	{
+	  keyboard_out(ctrl_shift_key_to_pkey[ch]);
+	}
+      else
+	{
+	  keyboard_out(key_to_pkey[ch]);
+	}
+      
     }
 }
 
