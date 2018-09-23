@@ -566,8 +566,9 @@ void screen_tty_char(padByte theChar)
     }
   else if ((theChar == 0x08) && (TTYLoc.x > 7)) /* backspace */
     {
+      _setcolor(0);
       TTYLoc.x -= CharWide;
-      // screen_block_draw(&scalex[TTYLoc.x],&scaley[TTYLoc.y],&scalex[TTYLoc.x+CharWide],&scaley[TTYLoc.y+CharHigh]);
+      _rectangle(_GFILLINTERIOR,scalex[TTYLoc.x],scaley[TTYLoc.y],scalex[TTYLoc.x+CharWide],scaley[TTYLoc.y+CharHigh]);
     }
   else if (theChar == 0x0A)                     /* line feed */
     TTYLoc.y -= CharHigh;
@@ -599,45 +600,6 @@ short screen_color_mono(padRGB* theColor)
     }
   else
     return 1;
-}
-
-/**
- * get screen color index matching RGB color for EGA
- */
-short screen_color_ega(padRGB* theColor)
-{
-  if (theColor->red==0 && theColor->green==0 && theColor->blue==0)
-    {
-      return 0;
-    }
-  else if (theColor->red==0 && theColor->green==0 && theColor->blue==255)
-    {
-      return 9;
-    }
-  else if (theColor->red==0 && theColor->green==255 && theColor->blue==0)
-    {
-      return 10;
-    }
-  else if (theColor->red==255 && theColor->green==0 && theColor->blue==0)
-    {
-      return 12;
-    }
-  else if (theColor->red==0 && theColor->green==255 && theColor->blue==255)
-    {
-      return 11;
-    }
-  else if (theColor->red==255 && theColor->green==0 && theColor->blue==255)
-    {
-      return 13;
-    }
-  else if (theColor->red==255 && theColor->green==255 && theColor->blue==0)
-    {
-      return 14;
-    }
-  else
-    {
-      return 15;
-    }
 }
 
 /**

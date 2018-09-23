@@ -98,11 +98,6 @@ void screen_tty_char(padByte theChar);
 short screen_color_mono(padRGB* theColor);
 
 /**
- * get screen color index matching RGB color for EGA
- */
-short screen_color_ega(padRGB* theColor);
-
-/**
  * get screen color index matching RGB color for all other palette based modes
  */
 short screen_color(padRGB* theColor);
