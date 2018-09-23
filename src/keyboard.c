@@ -11,6 +11,7 @@
 #include "prefs.h"
 #include "touch.h"
 #include "screen.h"
+#include "terminal.h"
 
 void keyboard_out(unsigned char platoKey)
 {
@@ -84,9 +85,13 @@ void keyboard_main(void)
 		{
 		case 'y':
 		  io_hang_up();
+		  terminal_set_tty();
+		  break;
+		case 'n':
+		  prefs_done();
 		  break;
 		}
-	      prefs_done();
+	      
 	    }
 	  if (ch==0x3B)
 	    prefs_run();

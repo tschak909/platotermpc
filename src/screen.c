@@ -42,8 +42,6 @@ extern bool touch_soft_cursor;
  */
 void screen_init(void)
 {
-  memset(&palette,-1,sizeof(palette));
-  
     switch(screen_mode)
       {
       case 0: // CGA 320x200x4
@@ -637,8 +635,6 @@ void screen_foreground(padRGB* theColor)
     }
   // otherwise, handle via palette based color setting.
   default_foreground=screen_color(theColor);
-  if (default_foreground==-1)
-    printf("fg color still -1!\n");
   default_foreground_color=screen_color_transform(theColor);
 
 }
@@ -655,8 +651,6 @@ void screen_background(padRGB* theColor)
     }
   // otherwise, handle via palette based color setting.
   default_background=screen_color(theColor);
-  if (default_foreground==-1)
-    printf("bg color still -1!\n");
   default_background_color=screen_color_transform(theColor);
 }
 
