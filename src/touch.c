@@ -224,5 +224,6 @@ void touch_hide(void)
  */
 void touch_done(void)
 {
-  
+  regs.w.ax=2;
+  int86(INT_MOUSE,&regs,&regs);
 }

@@ -734,4 +734,5 @@ short screen_color_matching(padRGB* theColor)
  */
 void screen_done(void)
 {
+  _setvideomode(_DEFAULTMODE);
 }

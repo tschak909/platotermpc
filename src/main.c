@@ -12,6 +12,8 @@
 #include "touch.h"
 #include "terminal.h"
 #include "keyboard.h"
+#include "config.h"
+#include "prefs.h"
 
 unsigned char already_started=false;
 extern unsigned char screen_mode;
@@ -43,11 +45,13 @@ void process_args(int argc, char* argv[])
 void main(int argc, char* argv[])
 {
   process_args(argc,argv);
+  config_init();
   screen_init();
   io_init();
   touch_init();
   terminal_init();
   ShowPLATO(splash,sizeof(splash));
+  prefs_show_greeting();
   terminal_initial_position();
   for (;;)
     {
