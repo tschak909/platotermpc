@@ -23,10 +23,9 @@ uint16_t width;
 uint16_t height;
 unsigned char screen_mode=8; // Try to detect by default
 bool is_mono=false;
-bool is_ega=false;
 unsigned char default_background=0;
 unsigned char default_foreground=1;
-long default_foreground_color=0x00ffffff;
+long default_foreground_color=0x003f3f3f;
 long default_background_color=0;
 long palette[256];
 struct videoconfig vc;
@@ -95,9 +94,6 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_350;
 	fontptr=&fontptr_10;
-	is_ega=true;
-	default_foreground=15; // white
-	/* _remappalette(1,0x00FFFFFF); // quickly get a white in palette. */
 	break;
       case 4: // VGA 640x480x2
 	_setvideomode(_VRES2COLOR);
@@ -110,7 +106,7 @@ void screen_init(void)
 	scaley=&scaley_480;
 	fontptr=&fontptr_16;
 	is_mono=true;
-	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	_remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	break;
       case 5: // VGA 640x480x16
 	_setvideomode(_VRES16COLOR);
@@ -122,7 +118,7 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_480;
 	fontptr=&fontptr_16;
-	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	_remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	break;
       case 6: // MCGA 320x200x256
 	_setvideomode(_MRES256COLOR);
@@ -134,7 +130,7 @@ void screen_init(void)
 	scalex=&scalex_320;
 	scaley=&scaley_200;
 	fontptr=&fontptr_6;
-	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	_remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	break;
       case 7: // SVGA 640x480x256
 	_setvideomode(_VRES256COLOR);
@@ -146,7 +142,7 @@ void screen_init(void)
 	scalex=&scalex_640;
 	scaley=&scaley_480;
 	fontptr=&fontptr_16;
-	_remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	_remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	touch_soft_cursor=true;
 	break;
       case 8: // Detect
@@ -164,7 +160,7 @@ void screen_init(void)
 	    scalex=&scalex_640;
 	    scaley=&scaley_480;
 	    fontptr=&fontptr_16;
-	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    _remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	    touch_soft_cursor=true;
 	    break;
 	  case _VGA:
@@ -178,7 +174,7 @@ void screen_init(void)
 	    scalex=&scalex_640;
 	    scaley=&scaley_480;
 	    fontptr=&fontptr_16;
-	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    _remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	    break;
 	  case _MCGA:
 	    _setvideomode(_MRES256COLOR);
@@ -191,7 +187,7 @@ void screen_init(void)
 	    scalex=&scalex_320;
 	    scaley=&scaley_200;
 	    fontptr=&fontptr_6;
-	    _remappalette(1,0x00FFFFFF); // quickly get a white in palette.
+	    _remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	    break;
 	  case _EGA:
 	    _setvideomode(_ERESCOLOR);
@@ -204,9 +200,7 @@ void screen_init(void)
 	    scalex=&scalex_640;
 	    scaley=&scaley_350;
 	    fontptr=&fontptr_10;
-	    default_foreground=15; // white
-	    is_ega=true;
-	    /* _remappalette(1,0x00FFFFFF); // quickly get a white in palette. */
+	    _remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	    break;
 	  case _CGA:
 	    _setvideomode(_HRESBW);
@@ -312,7 +306,7 @@ void screen_beep(void)
 void screen_clear(void)
 {
     _clearscreen(_GCLEARSCREEN);
-    memset(&palette,0,sizeof(palette));
+    memset(&palette,-1,sizeof(palette));
     palette[0]=default_background_color;
     palette[1]=default_foreground_color;
     _remapallpalette(palette);
@@ -667,11 +661,6 @@ void screen_foreground(padRGB* theColor)
       // default_foreground=screen_color_mono(theColor);
       return;
     }
-  else if (is_ega==1)
-    {
-      default_foreground=screen_color_ega(theColor);
-      return;
-    }
 
   // otherwise, handle via palette based color setting.
   default_foreground=screen_color(theColor);
@@ -687,11 +676,6 @@ void screen_background(padRGB* theColor)
   if (is_mono==1)
     {
       //default_background=screen_color_mono(theColor);
-      return;
-    }
-  else if (is_ega==1)
-    {
-      // default_background=screen_color_ega(theColor);
       return;
     }
 
@@ -714,10 +698,16 @@ void screen_paint(padPt* Coord)
  */
 long screen_color_transform(padRGB* theColor)
 {
-  unsigned long newRed=theColor->red*0.25;
-  unsigned long newGreen=theColor->green*0.25;
-  unsigned long newBlue=theColor->blue*0.25;
-  unsigned long transformedColor=(newRed)|(newGreen<<8)|(newBlue<<16);
+  unsigned long newRed;
+  unsigned long newGreen;
+  unsigned long newBlue;
+  unsigned long transformedColor;
+  
+  newRed=theColor->red*0.25;
+  newGreen=theColor->green*0.25;
+  newBlue=theColor->blue*0.25;
+  
+  transformedColor=(newRed)|(newGreen<<8)|(newBlue<<16);
   return transformedColor;
 }
 
@@ -732,7 +722,7 @@ short screen_color_matching(padRGB* theColor)
     {
       if (palette[i]==transformedColor)
 	return i;
-      else if (palette[i]==0)
+      else if (palette[i]==-1)
 	return i;
     }
   return -1;
