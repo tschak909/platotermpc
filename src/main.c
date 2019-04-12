@@ -39,6 +39,8 @@ void process_args(int argc, char* argv[])
 	screen_mode=6;
       else if (!strcasecmp(argv[i],"/SVGA"))
 	screen_mode=7;
+      else if (!strcasecmp(argv[i],"/GRID"))
+	screen_mode=9;
     }
 }
 

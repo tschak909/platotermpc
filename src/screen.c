@@ -144,6 +144,19 @@ void screen_init(void)
 	_remappalette(1,0x003F3F3F); // quickly get a white in palette.
 	touch_soft_cursor=true;
 	break;
+      case 9: // GRiD VGA Mono 640x400
+	_setvideomode(_VRES2COLOR);
+	width=640;
+	height=400;
+	FONT_SIZE_X=8;
+	FONT_SIZE_Y=12;
+	font=&font_640x400;
+	scalex=&scalex_640;
+	scaley=&scaley_400;
+	fontptr=&fontptr_12;
+	is_mono=true;
+	_remappalette(1,0x003F3F3F); // quickly get a white in palette.
+	break;
       case 8: // Detect
 	_getvideoconfig(&vc);
 	switch(vc.adapter)
