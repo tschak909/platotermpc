@@ -30,29 +30,29 @@ unsigned char extended_key_to_pkey[]={
   PKEY_NOKEY, /* 0x0d         */
   PKEY_NOKEY, /* 0x0e         */
   PKEY_NOKEY, /* 0x0f         */
-  PKEY_NOKEY, /* 0x10         */
+  PKEY_ACCESS, /* 0x10         */
   PKEY_NOKEY, /* 0x11         */
-  PKEY_NOKEY, /* 0x12         */
-  PKEY_NOKEY, /* 0x13         */
-  PKEY_NOKEY, /* 0x14         */
-  PKEY_NOKEY, /* 0x15         */
+  PKEY_EDIT1, /* 0x12         */
+  PKEY_ERASE1, /* 0x13         */
+  PKEY_TERM, /* 0x14         */
+  PKEY_SUB1, /* 0x15         */
   PKEY_NOKEY, /* 0x16         */
   PKEY_NOKEY, /* 0x17         */
   PKEY_NOKEY, /* 0x18         */
-  PKEY_NOKEY, /* 0x19         */
+  PKEY_SUPER1, /* 0x19         */
   PKEY_NOKEY, /* 0x1a         */
   PKEY_NOKEY, /* 0x1b         */
   PKEY_NOKEY, /* 0x1c         */
   PKEY_NOKEY, /* 0x1d         */
-  PKEY_NOKEY, /* 0x1e         */
-  PKEY_NOKEY, /* 0x1f         */
-  PKEY_NOKEY, /* 0x20         */
-  PKEY_NOKEY, /* 0x21         */
+  PKEY_ANS, /* 0x1e         */
+  PKEY_STOP1, /* 0x1f         */
+  PKEY_DATA1, /* 0x20         */
+  PKEY_FONT, /* 0x21         */
   PKEY_NOKEY, /* 0x22         */
-  PKEY_NOKEY, /* 0x23         */
+  PKEY_HELP1, /* 0x23         */
   PKEY_NOKEY, /* 0x24         */
   PKEY_NOKEY, /* 0x25         */
-  PKEY_NOKEY, /* 0x26         */
+  PKEY_LAB1, /* 0x26         */
   PKEY_NOKEY, /* 0x27         */
   PKEY_NOKEY, /* 0x28         */
   PKEY_NOKEY, /* 0x29         */
@@ -60,11 +60,11 @@ unsigned char extended_key_to_pkey[]={
   PKEY_NOKEY, /* 0x2b         */
   PKEY_NOKEY, /* 0x2c         */
   PKEY_NOKEY, /* 0x2d         */
-  PKEY_NOKEY, /* 0x2e         */
+  PKEY_COPY1, /* 0x2e         */
   PKEY_NOKEY, /* 0x2f         */
-  PKEY_NOKEY, /* 0x30         */
-  PKEY_NOKEY, /* 0x31         */
-  PKEY_NOKEY, /* 0x32         */
+  PKEY_BACK1, /* 0x30         */
+  PKEY_NEXT1, /* 0x31         */
+  PKEY_FONT, /* 0x32         */
   PKEY_NOKEY, /* 0x33         */
   PKEY_NOKEY, /* 0x34         */
   PKEY_NOKEY, /* 0x35         */
