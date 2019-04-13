@@ -520,7 +520,10 @@ void screen_char_draw(padPt* Coord, unsigned char* ch, unsigned char count)
   _setcolor(mainColor);
 
   x=scalex[(Coord->x&0x1FF)];
-  y=scaley[(Coord->y)+14&0x1FF];
+  if (ModeBold)
+    y=scaley[(Coord->y)+30&0x1FF];
+  else
+    y=scaley[(Coord->y)+15&0x1FF];
 
   if (FastText==padF)
     {
