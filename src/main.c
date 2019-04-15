@@ -52,7 +52,13 @@ void main(int argc, char* argv[])
   io_init();
   touch_init();
   terminal_init();
-  ShowPLATO(splash,sizeof(splash));
+
+  // HAAAACK!
+  if (screen_mode==9)
+    ShowPLATO(grid_splash,sizeof(grid_splash));
+  else
+    ShowPLATO(splash,sizeof(splash));
+
   prefs_show_greeting();
   terminal_initial_position();
   for (;;)
